@@ -1,4 +1,4 @@
-%include 'uefi/structs.inc'
+%include 'uefi/defines.inc'
 
 extern uefi_bs
 

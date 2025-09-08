@@ -1,9 +1,13 @@
-%include 'uefi/structs.inc'
+%include 'uefi/defines.inc'
 
 extern uefi_gop_locate
 extern uefi_gop_set
 extern uefi_gop_rect
 extern uefi_gop_clear
+
+extern uefi_cip_locate
+extern uefi_cip_read
+extern uefi_cip_wait
 
 bits 64
 default rel
@@ -31,10 +35,15 @@ section .text
         mov rax, [rdx + UEFI_SYSTEM_TABLE.RUNTIME_SERVICES]
         mov [uefi_rs], rax
 
-        ; init UEFI GOP
+        ; init graphics
         call uefi_gop_locate
         xor ecx, ecx
         call uefi_gop_set
+
+        ; init input
+        call uefi_cip_locate
+        cmp al, 0
+        je err
 
         ; clear screen to gray
         mov cl, 50
@@ -42,34 +51,44 @@ section .text
         mov bl, 50
         call uefi_gop_clear
 
-        ; draw box1
-        mov ecx, 25
+        ; draw boxes
+        xor r12b, r12b
+        .draw_box:
+        mov eax, 50
+        mul r12b
+
+        mov ecx, eax
         mov edx, ecx
-        mov ebx, 100
-        mov esi, 100
-        mov r8b, 255
-        mov r9b, 0
+        mov ebx, 250
+        mov esi, 250
+        mov r8b, al
+        add r8b, al
+        mov r9b, al
         mov r10b, 0
         call uefi_gop_rect
 
-        ; draw box2
-        mov ecx, 50
-        mov edx, ecx
-        mov ebx, 100
-        mov esi, 100
-        mov r8b, 0
-        mov r9b, 255
-        mov r10b, 0
-        call uefi_gop_rect
+        inc r12b
+        cmp r12b, 10
+        jne .draw_box
 
-        ; draw box3
-        mov ecx, 75
-        mov edx, ecx
-        mov esi, 100
-        mov r8b, 0
-        mov r9b, 0
-        mov r10b, 255
-        call uefi_gop_rect
+        ; look for key pressed
+        .check_press:
+            call uefi_cip_wait
+            cmp ax, 'a'
+            je err
+            cmp ax, UEFI_SCANCODE_UARROW
+            je err
+            jmp .check_press
+
+        ; infinite loop
+        jmp $
+
+    err:
+        ; clear screen with red
+        mov cl, 255
+        mov dl, 0
+        mov bl, 0
+        call uefi_gop_clear
 
         ; infinite loop
         jmp $

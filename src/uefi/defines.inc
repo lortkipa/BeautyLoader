@@ -1,6 +1,8 @@
 %ifndef UEFI_UEFI_INC
 %define UEFI_UEFI_INC
 
+%define UEFI_SUCCESS 0
+
 struc UEFI_GUID
     .DATA1 : resd 1
     .DATA2 : resw 1
@@ -122,5 +124,40 @@ struc UEFI_GRAPHICS_OUTPUT_MODE_INFORMATION
     .PIXELS_PER_SCAN_LINE  : resd 1
     .SIZE                  :
 endstruc
+
+struc UEFI_SIMPLE_TEXT_INPUT_PROTOCOL
+    .RESET    : resq 1
+    .READ_KEY : resq 1
+    .WAIT_KEY : resq 1
+    .SIZE     :
+endstruc
+
+struc UEFI_INPUT_KEY
+    .SCAN_CODE    : resw 1
+    .UNICODE_CHAR : resw 1
+    .SIZE         :
+endstruc
+
+%define UEFI_SCANCODE_UARROW 0x01
+%define UEFI_SCANCODE_DARROW 0x02
+%define UEFI_SCANCODE_RARROW 0x03
+%define UEFI_SCANCODE_LARROW 0x04
+%define UEFI_SCANCODE_HOME   0x05
+%define UEFI_SCANCODE_END    0x06
+%define UEFI_SCANCODE_INSERT 0x07
+%define UEFI_SCANCODE_DELETE 0x08
+%define UEFI_SCANCODE_PAGEU  0x09
+%define UEFI_SCANCODE_PAGED  0x0A
+%define UEFI_SCANCODE_F1     0x0B
+%define UEFI_SCANCODE_F2     0x0C
+%define UEFI_SCANCODE_F3     0x0D
+%define UEFI_SCANCODE_F4     0x0E
+%define UEFI_SCANCODE_F5     0x0F
+%define UEFI_SCANCODE_F6     0x10
+%define UEFI_SCANCODE_F7     0x11
+%define UEFI_SCANCODE_F8     0x12
+%define UEFI_SCANCODE_F9     0x13
+%define UEFI_SCANCODE_F10    0x14
+%define UEFI_SCANCODE_ESC    0x17
 
 %endif
